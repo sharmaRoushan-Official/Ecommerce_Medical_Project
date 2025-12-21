@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from novenaApp.models import contactModel
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 # Create your views here.
 
@@ -48,5 +51,16 @@ def viewSingleBlog(request):
     return resp
 
 def viewContact(request):
-    resp = render(request,"novenaApp/contact.html")
-    return resp
+    if request.method == "POST":
+        contact = contactModel.objects.create(
+            name=request.POST.get("name", ""),
+            email=request.POST.get("email", ""),
+            subject=request.POST.get("subject", ""),
+            phoneNo=request.POST.get("phone", ""),
+            message=request.POST.get("message", ""),
+        )
+        
+        return render(request,'novenaApp/contactSuccess.html',{'name':contact.name})
+
+    return render(request, "novenaApp/contact.html")
+
