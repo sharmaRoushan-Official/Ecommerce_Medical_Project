@@ -2,6 +2,7 @@ from django.shortcuts import render
 from novenaApp.models import contactModel
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from .models import Appointment
 
 # Create your views here.
 
@@ -37,9 +38,31 @@ def viewSingleDoctor(reqeust):
     resp = render(reqeust,"novenaApp/singleDoctor.html")
     return resp
 
+
 def viewAppoinment(request):
-    resp = render(request,"novenaApp/appoinment.html")
-    return resp
+    if request.method == "POST":
+        department = request.POST.get("department")
+        doctor = request.POST.get("doctor")
+        appointment_date = request.POST.get("appointment_date")
+        appointment_time = request.POST.get("appointment_time")
+        full_name = request.POST.get("full_name")
+        phone_number = request.POST.get("phone_number")
+        message = request.POST.get("message")
+
+        Appointment.objects.create(
+            department=department,
+            doctor=doctor,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            full_name=full_name,
+            phone_number=phone_number,
+            message=message
+        )
+
+        return render(request,"novenaApp/appointment_success.html")
+
+    return render(request, "novenaApp/appoinment.html")
+
 
 
 def viewBlog(request):
@@ -63,4 +86,5 @@ def viewContact(request):
         return render(request,'novenaApp/contactSuccess.html',{'name':contact.name})
 
     return render(request, "novenaApp/contact.html")
+
 
