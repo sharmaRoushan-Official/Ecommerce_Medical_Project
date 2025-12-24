@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from novenaApp.models import contactModel
+from novenaApp.models import contactModel,SubstribeFooter,singleBlogModel
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from .models import Appointment
@@ -86,5 +86,28 @@ def viewContact(request):
         return render(request,'novenaApp/contactSuccess.html',{'name':contact.name})
 
     return render(request, "novenaApp/contact.html")
+
+
+def viewSubscribeFooter(request):
+    if request.method == "POST":
+        subscribe = SubstribeFooter.objects.create(
+            email=request.POST.get("email", "")
+        )
+        return render(request,"novenaApp/subscribe_success.html")
+    
+
+# singleBlogPage
+
+def viewSingleBlog(request):
+    if request.method == "POST":
+        message = singleBlogModel.objects.create(
+            name = request.POST.get("name",""),
+            email=request.POST.get("email", ""),
+            message= request.POST.get("comment","")
+        )
+        return HttpResponse("<h1>Message Sent Successfully!!</h1>")
+    
+    return render(request,"novenaApp/singleBlog.html")
+
 
 

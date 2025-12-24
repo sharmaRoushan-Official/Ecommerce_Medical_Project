@@ -225,10 +225,12 @@
 						Copyright &copy; 2021, Designed &amp; Developed by <a href="https://sharma.com/">sharma</a>
 					</div>
 				</div>
+			
 				<div class="col-lg-6">
 					<div class="subscribe-form text-lg-right mt-5 mt-lg-0">
-						<form action="#" class="subscribe">
-							<input type="text" class="form-control" placeholder="Your Email address" required>
+						<form action="{% url 'subscribeFooter' %}" class="subscribe" method="post">
+							{% csrf_token %}
+							<input type="text" class="form-control" placeholder="Your Email address" name="email" required>
 							<button type="submit" class="btn btn-main-2 btn-round-full">Subscribe</button>
 						</form>
 					</div>
