@@ -3,6 +3,7 @@ from novenaApp.models import contactModel,SubstribeFooter,singleBlogModel
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from .models import Appointment
+from datetime import datetime, date
 
 # Create your views here.
 
@@ -39,27 +40,119 @@ def viewSingleDoctor(reqeust):
     return resp
 
 
+from datetime import datetime, date
+
 def viewAppoinment(request):
     if request.method == "POST":
-        department = request.POST.get("department")
-        doctor = request.POST.get("doctor")
-        appointment_date = request.POST.get("appointment_date")
-        appointment_time = request.POST.get("appointment_time")
-        full_name = request.POST.get("full_name")
-        phone_number = request.POST.get("phone_number")
-        message = request.POST.get("message")
+        # Get all form data
+        department = request.POST.get("department", "").strip()
+        doctor = request.POST.get("doctor", "").strip()
+        appointment_date = request.POST.get("appointment_date", "").strip()
+        appointment_time = request.POST.get("appointment_time", "").strip()
+        full_name = request.POST.get("full_name", "").strip()
+        phone_number = request.POST.get("phone_number", "").strip()
+        message = request.POST.get("message", "").strip()
 
-        Appointment.objects.create(
-            department=department,
-            doctor=doctor,
-            appointment_date=appointment_date,
-            appointment_time=appointment_time,
-            full_name=full_name,
+        # Validation errors list
+        errors = []
+
+        # Validate department
+        if not department or department == "Choose Department":
+            errors.append("Please select a department.")
+
+        # Validate doctor
+        if not doctor or doctor == "Select Doctors":
+            errors.append("Please select a doctor.")
+
+        # Validate appointment date
+        if not appointment_date:
+            errors.append("Please select an appointment date.")
+        else:
+            try:
+                date_obj = datetime.strptime(appointment_date, "%Y-%m-%d").date()
+                # Check if date is not in the past
+                if date_obj < date.today():
+                    errors.append("Appointment date cannot be in the past.")
+            except ValueError:
+                errors.append("Invalid date format.")
+
+        # Validate appointment time
+        if not appointment_time:
+            errors.append("Please select an appointment time.")
+
+        # Validate full name
+        if not full_name:
+            errors.append("Please enter your full name.")
+        elif len(full_name) < 3:
+            errors.append("Name must be at least 3 characters long.")
+
+        # Validate phone number
+        if not phone_number:
+            errors.append("Please enter your phone number.")
+        elif not phone_number.replace("+", "").replace("-", "").replace(" ", "").isdigit():
+            errors.append("Phone number must contain only digits.")
+        elif len(phone_number.replace("+", "").replace("-", "").replace(" ", "")) < 10:
+            errors.append("Phone number must be at least 10 digits.")
+
+        # If there are errors, return to form with errors
+        if errors:
+            return render(request, "novenaApp/appoinment.html", {
+                'errors': errors,
+                'department': department,
+                'doctor': doctor,
+                'appointment_date': appointment_date,
+                'appointment_time': appointment_time,
+                'full_name': full_name,
+                'phone_number': phone_number,
+                'message': message
+            })
+
+        # Check for duplicate appointments
+        existing_appointment = Appointment.objects.filter(
             phone_number=phone_number,
-            message=message
-        )
+            appointment_date=appointment_date,
+            appointment_time=appointment_time
+        ).exists()
 
-        return render(request,"novenaApp/appointment_success.html")
+        if existing_appointment:
+            return render(request, "novenaApp/appoinment.html", {
+                'errors': ['You already have an appointment scheduled at this date and time.'],
+                'department': department,
+                'doctor': doctor,
+                'appointment_date': appointment_date,
+                'appointment_time': appointment_time,
+                'full_name': full_name,
+                'phone_number': phone_number,
+                'message': message
+            })
+
+        # Create appointment
+        try:
+            Appointment.objects.create(
+                department=department,
+                doctor=doctor,
+                appointment_date=appointment_date,
+                appointment_time=appointment_time,
+                full_name=full_name,
+                phone_number=phone_number,
+                message=message
+            )
+
+            return render(request, "novenaApp/appointment_success.html", {
+                'name': full_name
+            })
+
+        except Exception as e:
+            return render(request, "novenaApp/appoinment.html", {
+                'errors': [f'Error creating appointment: {str(e)}'],
+                'department': department,
+                'doctor': doctor,
+                'appointment_date': appointment_date,
+                'appointment_time': appointment_time,
+                'full_name': full_name,
+                'phone_number': phone_number,
+                'message': message
+            })
 
     return render(request, "novenaApp/appoinment.html")
 
@@ -100,14 +193,23 @@ def viewSubscribeFooter(request):
 
 def viewSingleBlog(request):
     if request.method == "POST":
+        email = request.POST.get("email", "")
+        
+        # Check if email already exists
+        if singleBlogModel.objects.filter(email=email).exists():
+            return render(request, "novenaApp/singleBlog.html", {
+                'error': 'You have already commented with this email.'
+            })
+        
+        # Create the comment only if email doesn't exist
         message = singleBlogModel.objects.create(
-            name = request.POST.get("name",""),
-            email=request.POST.get("email", ""),
-            message= request.POST.get("comment","")
+            name=request.POST.get("name", ""),
+            email=email,
+            message=request.POST.get("comment", "")
         )
-        return HttpResponse("<h1>Message Sent Successfully!!</h1>")
+        return render(request, "novenaApp/messageSentSuccess.html")
     
-    return render(request,"novenaApp/singleBlog.html")
+    return render(request, "novenaApp/singleBlog.html")
 
 
 
