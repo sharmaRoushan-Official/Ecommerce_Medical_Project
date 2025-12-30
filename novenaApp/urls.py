@@ -15,6 +15,5 @@ urlpatterns = [
     path('singleBlog/',viewSingleBlog,name='singleBlog'),
     path('contact/',viewContact,name='contact'),
     path('subscribeFooter/',viewSubscribeFooter,name='subscribeFooter'),
-    path('singleBlogComment/',viewSingleBlog,name="singleBlogComment")
-    
+    path('singleBlogComment/',viewSingleBlog,name="singleBlogComment"),
 ]
