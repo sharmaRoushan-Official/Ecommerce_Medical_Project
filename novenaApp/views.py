@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from .models import Appointment
 from datetime import datetime, date
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -210,6 +211,20 @@ def viewSingleBlog(request):
         return render(request, "novenaApp/messageSentSuccess.html")
     
     return render(request, "novenaApp/singleBlog.html")
+
+
+# Dashboard View
+@login_required(login_url='/admin/login/')
+def dashboardView(request):
+    context = {
+        'appointments': Appointment.objects.all(),
+        'contacts': contactModel.objects.all(),
+        'subscribers': SubstribeFooter.objects.all(),
+        'blog_comments': singleBlogModel.objects.all(),
+        
+    }
+    resp = render(request,'novenaApp/dashboard.html', context)
+    return resp
 
 
 

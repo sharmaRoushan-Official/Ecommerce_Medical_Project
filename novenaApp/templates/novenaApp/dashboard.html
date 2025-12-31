@@ -1,0 +1,87 @@
+{% extends 'novenaApp/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+    <div class="container">
+        <h1>Dashboard</h1>
+        <p>Welcome to your dashboard.</p>
+        <h2>Appointments</h2>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Patient Name</th>
+                <th>Doctor Name</th>
+                <th>Date</th>
+                <th>Time</th>
+            </tr>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.id }}</td>
+                <td>{{ appointment.full_name }}</td>
+                <td>{{ appointment.doctor }}</td>
+                <td>{{ appointment.appointment_date }}</td>
+                <td>{{ appointment.appointment_time }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h2>Contacts</h2>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Phone No</th>
+            </tr>
+            {% for contact in contacts %}
+            <tr>
+                <td>{{ contact.id }}</td>
+                <td>{{ contact.name }}</td>
+                <td>{{ contact.email }}</td>
+                <td>{{ contact.subject }}</td>
+                <td>{{ contact.phoneNo }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Subscribers</h2>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+            </tr>
+            {% for subscriber in subscribers %}
+            <tr>
+                <td>{{ subscriber.id }}</td>
+                <td>{{ subscriber.email }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Blog Comments</h2>
+
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Message</th>
+
+            </tr>
+
+            {% for comment in blog_comments %}
+            <tr>
+
+                <!-- Add comment fields here -->
+                <td>{{ comment.id }}</td>
+                <td>{{ comment.name }}</td> 
+                <td>{{ comment.email }}</td>
+                <td>{{ comment.message }}</td>
+                
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    </div>
+{% endblock body %}

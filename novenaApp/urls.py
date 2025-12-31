@@ -16,4 +16,5 @@ urlpatterns = [
     path('contact/',viewContact,name='contact'),
     path('subscribeFooter/',viewSubscribeFooter,name='subscribeFooter'),
     path('singleBlogComment/',viewSingleBlog,name="singleBlogComment"),
+    path('dashboard/',dashboardView,name='dashboard'),
 ]
